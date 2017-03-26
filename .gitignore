@@ -1,4 +1,3 @@
-/data
-/files
+data
 *.pyc
 *.csv
