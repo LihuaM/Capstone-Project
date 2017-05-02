@@ -74,9 +74,6 @@ if __name__ =='__main__':
     # Split the data into trainig datset(0.9) and testing dataset(0.1)
     df_train, df_test = split_data(df)
 
-    stopwords_set = set(stopwords.words('english'))
-    punctuation = set(string.punctuation)
-
     # Set values for various parameters
     num_features = 300    # Word vector dimensionality
     min_word_count = 1    # Minimum word count
