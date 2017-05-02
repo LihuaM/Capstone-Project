@@ -24,9 +24,9 @@ More formally, the duplicate detection problem can be defined as follows: given 
 ## Result
    The best result was achieved by using Word2Vec model based on self_trained model. The scores were:
 
-   Accuracy Score | Recall Score | Precision Score | AUC Score
-   -------------  | -------------| ----------------|-----------:
-       0.77       |     0.55     |       0.76      |    0.83
+   |Accuracy Score  | Recall Score   | Precision Score | AUC Score |
+   | -------------  | :-------------:| :--------------:|-----------:
+   |     0.77       |     0.55       |       0.76      |    0.83   |
 
 
 ## Data Source

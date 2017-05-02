@@ -44,8 +44,8 @@ def model_self_trained(sentences, num_features, min_word_count, num_workers, con
     '''
     Train a model based on the own dataset.
     INPUT: a list of question1 and question2, number of features to use for word vector dimensionality,\
-           minimum word count, number of threads to run in parallel, number of threads to run in parallel,\
-           context window size, downsample setting for frequent words
+           minimum word count, number of threads to run in parallel, context window size,\
+           downsample setting for frequent words
     OUTPUT:self_trained model
     '''
     model_self = Word2Vec(sentences, workers=num_workers, \
@@ -56,7 +56,7 @@ def model_self_trained(sentences, num_features, min_word_count, num_workers, con
 def model_google_news(file_path, binary=True):
     '''
     Get the google_news model from given path.
-    INPUT: filepath from which to get google_news model.
+    INPUT: file_path from which to get google_news model.
     OUTPUT: google_news model
     '''
     model_google = gensim.models.KeyedVectors.load_word2vec_format(file_path, binary=True)
@@ -88,14 +88,14 @@ if __name__ =='__main__':
     # Get the names of the words in the model's vocabulary
     model_words = get_model_words(sentences)
     # Get the training dataset vectors.
-    df_train_vecs = make_feature_vec(df_train, model_self, num_features)
+    df_train_vecs_s = make_feature_vec(df_train, model_self, num_features)
     # Get the testing dataset vectors.
-    df_test_vecs = make_feature_vec(df_test, model_self, num_features)
+    df_test_vecs_s = make_feature_vec(df_test, model_self, num_features)
     # Fit Random Forest Classifier model.
     rmc = RandomForestClassifier(n_estimators=10)
-    rmc.fit(df_train_vecs, df_train_y)
+    rmc.fit(df_train_vecs_s, df_train_y)
     # Get the scores of testing dataset
-    get_scores(rmc, df_test_vecs, df_test_y)
+    get_scores(rmc, df_test_vecs_s, df_test_y)
 
 
     # Get Google News pre_trainded model.
@@ -103,11 +103,11 @@ if __name__ =='__main__':
     # Get names of the words in the Google News model's vocabulary.
     index2word_set = set(model_google_news.index2word)
     # Get training dataset vectors.
-    df_train_vecs = make_feature_vec(df_train, model_google, index2word_set, num_features)
+    df_train_vecs_g = make_feature_vec(df_train, model_google, index2word_set, num_features)
     # Get the testing dataset vectors.
-    df_train_vecs = make_feature_vec(df_train, model_google,index2word_set, num_features)
+    df_train_vecs_g = make_feature_vec(df_train, model_google,index2word_set, num_features)
     # Fit Random Forest Classifier model.
     rmc_modelg = RandomForestClassifier(n_estimators=10)
-    rmc_modelg.fit(df_train_vecs, df_train_y)
+    rmc_modelg.fit(df_train_vecs_g, df_train_y)
     # Get the scores of testing dataset
-    get_scores(rmc_modelg, df_test_vecs, df_test_y)
+    get_scores(rmc_modelg, df_test_vecs_g, df_test_y)

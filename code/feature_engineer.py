@@ -66,6 +66,7 @@ def get_unigram_sentence(sentence):
     INPUT: string of a sentence from which to get unigrams
     OUTPUT: a list of unigrams of the sentence
     '''
+    # Get stopwords_set and punctuation set.
     stopwords_set = set(stopwords.words('english'))
     punctuation = set(string.punctuation)
     return [word for word in word_tokenize(sentence.lower()) if word not in stopwords_set and\
@@ -94,7 +95,7 @@ def get_common_unigram_ratio(df):
 
 def common_unigram_ratio_plot(df):
     '''
-    Bar plot to show common_unigram_ratio diffrence of two classes.
+    Bar plot to show common_unigram_ratio difference of two classes.
     INPUT: dataframe
     OUTPUT: bar plot
     '''
@@ -126,7 +127,7 @@ def get_common_bigram_ratio(df):
 
 def common_bigram_ratio_plot(df):
     '''
-    Bar plot to show common_bigram_ratio diffrence of two classes.
+    Bar plot to show common_bigram_ratio difference of two classes.
     INPUT: dataframe
     OUTPUT: bar plot
     '''
@@ -158,7 +159,7 @@ def get_common_trigram_ratio(df):
 
 def common_trigram_ratio_plot(df):
     '''
-    Bar plot to show common_trigram_ratio diffrence of two classes.
+    Bar plot to show common_trigram_ratio difference of two classes.
     INPUT: dataframe
     OUTPUT: bar plot
     '''
@@ -183,7 +184,7 @@ def get_cosine_similarity(df):
 
 def cosine_similarity_plot(df):
     '''
-    Bar plot to show cosine_similarity diffrence of two classes.
+    Bar plot to show cosine_similarity difference of two classes.
     INPUT: dataframe
     OUTPUT: bar plot
     '''
@@ -197,13 +198,13 @@ def get_features(df):
     INPUT: dataframe
     OUTPUT: NONE
     '''
-    get_unigrams(df_train)
-    get_common_unigram_ratio(df_train)
-    get_bigrams(df_train)
-    get_common_bigram_ratio(df_train)
-    get_trigrams(df_train)
-    get_common_trigram_ratio(df_train)
-    get_cosine_similarity(df_train)
+    get_unigrams(df)
+    get_common_unigram_ratio(df)
+    get_bigrams(df)
+    get_common_bigram_ratio(df)
+    get_trigrams(df)
+    get_common_trigram_ratio(df_tradfin)
+    get_cosine_similarity(df)
 
 
 def build_model(model, df_X, df_y):
@@ -233,11 +234,8 @@ if __name__ == '__main__':
     duplicate_or_not_plot(df)
     df_train, df_test = split_data(df)
 
-    # Get stopwords_set and punctuation set.
-    stopwords_set = set(stopwords.words('english'))
-    punctuation = set(string.punctuation)
-
     # Make tfidf_matrix of paired quesions.
+    stopwords_set = set(stopwords.words('english'))
     tfidf_vectorizer = TfidfVectorizer(stop_words=stopwords_set)
     tfidf_matrix = tfidf_vectorizer.fit(df_train.question1.values + df_train.question1.values)
 
