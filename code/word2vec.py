@@ -88,13 +88,13 @@ if __name__ =='__main__':
     # Get the names of the words in the model's vocabulary
     model_words = get_model_words(sentences)
     # Get the training dataset vectors.
-    df_train_vecs_s = make_feature_vec(df_train, model_self, num_features)
+    df_train_vecs_s = make_feature_vec(df_train, model_self, model_words, num_features)
     # Get the testing dataset vectors.
-    df_test_vecs_s = make_feature_vec(df_test, model_self, num_features)
+    df_test_vecs_s = make_feature_vec(df_test, model_self, model_words, num_features)
     # Fit Random Forest Classifier model.
     rmc = RandomForestClassifier(n_estimators=10)
     rmc.fit(df_train_vecs_s, df_train_y)
-    # Get the scores of testing dataset
+    # Get the scores of testing dataset.
     get_scores(rmc, df_test_vecs_s, df_test_y)
 
 
@@ -109,5 +109,5 @@ if __name__ =='__main__':
     # Fit Random Forest Classifier model.
     rmc_modelg = RandomForestClassifier(n_estimators=10)
     rmc_modelg.fit(df_train_vecs_g, df_train_y)
-    # Get the scores of testing dataset
+    # Get the scores of testing dataset.
     get_scores(rmc_modelg, df_test_vecs_g, df_test_y)

@@ -13,19 +13,21 @@ More formally, the duplicate detection problem can be defined as follows: given 
 
  where 1 represents that q1 and q2 have the same intent and 0 otherwise.
 
-## Two methods to solve the problems
+## Problem Solving
 * Method One -- Regular Feature Engineering
+
   I kept four engineered features in the final model, which were common_unigram_ratio, common_bigram_ratio, common_trigram_ratio, cosine_similarity. I tried Random Forest Classifier and Gradient Boosting Classifier
   to fit my model.
 
 * Method Two -- Word2Vec
+
   I used two models, one was self_trained model based on my own dataset, the other was google_news model. I used 300 vector features for the dataset and fit the Random Forest Classifier to both models.
 
 ## Result
    The best result was achieved by using Word2Vec model based on self_trained model. The scores were:
 
-   |Accuracy Score  | Recall Score   | Precision Score | AUC Score |
-   | -------------  | :-------------:| :--------------:|-----------:
+   | Accuracy Score | Recall Score   | Precision Score | AUC Score |
+   | :-------------:| :-------------:| :--------------:|:---------:|
    |     0.77       |     0.55       |       0.76      |    0.83   |
 
 
