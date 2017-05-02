@@ -1,10 +1,11 @@
 from __future__ import division
+import string
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import accuracy_score, recall_score, precision_score, roc_auc_score
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -14,6 +15,7 @@ import nltk
 from nltk.corpus import stopwords
 from nltk import word_tokenize
 from nltk import ngrams
+import gensim
 from gensim.models import Word2Vec
 import logging
 
@@ -23,6 +25,7 @@ pd.set_option('display.max_columns', 100)
 
 def get_data(file_path):
     '''
+    Get the data from specified file path; drop NAs and 'id','qid1', 'qid2' columns.
     INPUT: file path from which to import the data
     OUTPUT: dataframe
     '''
@@ -33,8 +36,9 @@ def get_data(file_path):
 
 def duplicate_or_not_plot(df):
     '''
+    Bar plot to show the Count of Duplicated or Not_Duplicated Questions.
     INPUT: dataframe
-    OUTPUT: plot to show the count of Duplicated or Not_Duplicated questions.
+    OUTPUT: barplot
     '''
     plt.rcParams['figure.figsize'] = (8, 6)
     df.groupby('is_duplicate').is_duplicate.count().plot(kind='bar', rot=0)
@@ -47,7 +51,7 @@ def split_data(df):
     '''
     Split the data into training dataset(0.9) and testing dataset(0.1)
     INPUT: dataframe
-    OUTPUT: training dataset and testing dataset
+    OUTPUT: dataframe of training dataset and dataframe of testing dataset
     '''
     X = df[['question1', 'question2']]
     y = df.is_duplicate
@@ -58,14 +62,18 @@ def split_data(df):
 
 def get_unigram_sentence(sentence):
     '''
-    INPUT: sentence from which to get unigrams
+    Get unigrams for each sentence.
+    INPUT: string of a sentence from which to get unigrams
     OUTPUT: a list of unigrams of the sentence
     '''
+    stopwords_set = set(stopwords.words('english'))
+    punctuation = set(string.punctuation)
     return [word for word in word_tokenize(sentence.lower()) if word not in stopwords_set and\
             word not in punctuation]
 
 def get_unigrams(df):
     '''
+    Function to get unigrams of question1 and question2.
     INPUT: dataframe
     OUTPUT: NONE
     '''
@@ -74,6 +82,7 @@ def get_unigrams(df):
 
 def get_common_unigram_ratio(df):
     '''
+    Function to get common_unigram_ratio.
     INPUT: dataframe
     OUTPUT: NONE
     '''
@@ -81,12 +90,13 @@ def get_common_unigram_ratio(df):
                                  (set(x['question2_unigram']))), axis=1)
     df['unigram_count'] = df.apply(lambda x: max(len(set(x['question1_unigram']).union\
                           (set(x['question2_unigram']))), 1), axis=1)
-    df['common_unigram_ratio'] = df['common_unigram_count'] / df'unigram_count']
+    df['common_unigram_ratio'] = df['common_unigram_count'] / df['unigram_count']
 
 def common_unigram_ratio_plot(df):
     '''
+    Bar plot to show common_unigram_ratio diffrence of two classes.
     INPUT: dataframe
-    OUTPUT: plot to show common_unigram_ratio diffrence of two classes
+    OUTPUT: bar plot
     '''
     plt.figure(figsize=(8,6))
     sns.violinplot(x='is_duplicate', y='common_unigram_ratio', data=df)
@@ -95,7 +105,7 @@ def common_unigram_ratio_plot(df):
 
 def get_bigrams(df):
     '''
-    Get bigrams of question1 and question2.
+    Function to get bigrams of question1 and question2.
     INPUT: dataframe
     OUTPUT: None
     '''
@@ -104,7 +114,7 @@ def get_bigrams(df):
 #
 def get_common_bigram_ratio(df):
     '''
-    Get common_bigram_ratio of question1 and question2.
+    Function to get common_bigram_ratio of question1 and question2.
     INPUT: dataframe
     OUTPUT: NONE
     '''
@@ -116,8 +126,9 @@ def get_common_bigram_ratio(df):
 
 def common_bigram_ratio_plot(df):
     '''
+    Bar plot to show common_bigram_ratio diffrence of two classes.
     INPUT: dataframe
-    OUTPUT: plot to show common_bigram_ratio diffrence of two classes
+    OUTPUT: bar plot
     '''
     plt.figure(figsize=(8,6))
     sns.violinplot(x='is_duplicate', y='common_bigram_ratio', data=df)
@@ -147,8 +158,9 @@ def get_common_trigram_ratio(df):
 
 def common_trigram_ratio_plot(df):
     '''
+    Bar plot to show common_trigram_ratio diffrence of two classes.
     INPUT: dataframe
-    OUTPUT: plot to show common_trigram_ratio diffrence of two classes
+    OUTPUT: bar plot
     '''
     plt.figure(figsize=(8,6))
     sns.violinplot(x='is_duplicate', y='common_trigram_ratio', data=df)
@@ -157,7 +169,7 @@ def common_trigram_ratio_plot(df):
 
 def get_cosine_similarity(df):
     '''
-    Get cosine similarity of question1 and question2
+    Function to get cosine similarity of question1 and question2
     INPUT: dataframe
     OUTPUT: NONE
     '''
@@ -171,12 +183,13 @@ def get_cosine_similarity(df):
 
 def cosine_similarity_plot(df):
     '''
+    Bar plot to show cosine_similarity diffrence of two classes.
     INPUT: dataframe
-    OUTPUT: plot to show cosine_similarity diffrence of two classes
+    OUTPUT: bar plot
     '''
     sns.violinplot(x='is_duplicate', y='cosine_similarity', data=df)
     plt.title('Cosine_Similarity Difference Between Two Classes', fontsize=15)
-    plt.savefig('cosine_similarity_violinplot')
+    plt.savefig('image/cosine_similarity_violinplot')
 
 def get_features(df):
     '''
@@ -192,40 +205,57 @@ def get_features(df):
     get_common_trigram_ratio(df_train)
     get_cosine_similarity(df_train)
 
-def get_
 
 def build_model(model, df_X, df_y):
+    '''
+    Fit the model based on featues and target.
+    INPUT: model to fit, dataframe of features, 1d array of target
+    OUTPUT: NONE
+    '''
     model.fit(df_X, df_y)
-    return model
 
 def get_scores(model, df_test_X, df_test_y):
+    '''
+    Get accuracy_score, recall_score, precision_score, roc_auc_score.
+    INPUT: fitted model, dataframe of features, 1d array of target
+    OUTPUT: print out accuracy_score, recall_score, precision_score, roc_auc_score
+    '''
     model_accuracy_score = accuracy_score(df_test_y, model.predict(df_test_X))
     model_recall_score = recall_score(df_test_y, model.predict(df_test_X))
     model_precision_score = precision_score(df_test_y, model.predict(df_test_X))
     model_roc_auc_score = roc_auc_score(df_test_y, model.predict_proba(df_test_X)[:,1])
     print 'Accuracy Score = {:.2f}\nRecall Score= {:.2f}\nPrecision Score = {:.2f}\nAUC_Score = {:.2f}'.\
-      format(model_accuracy_score, model_recall_score, model_precision_score, model_roc_auc_score))
+      format(model_accuracy_score, model_recall_score, model_precision_score, model_roc_auc_score)
 
 if __name__ == '__main__':
     file_path = '../data/quora_duplicate_questions.tsv'
     df = get_data(file_path)
-    #duplicate_or_not_plot(df)
+    duplicate_or_not_plot(df)
     df_train, df_test = split_data(df)
+
+    # Get stopwords_set and punctuation set.
     stopwords_set = set(stopwords.words('english'))
     punctuation = set(string.punctuation)
+
+    # Make tfidf_matrix of paired quesions.
     tfidf_vectorizer = TfidfVectorizer(stop_words=stopwords_set)
     tfidf_matrix = tfidf_vectorizer.fit(df_train.question1.values + df_train.question1.values)
-    get_featues(df_train)
+
+    # Get all the engineered features of df_train.
+    get_features(df_train)
 
     feature_cols = ['common_unigram_ratio', 'common_bigram_ratio','common_trigram_ratio',\
                 'cosine_similarity']
+
     df_train_X = df_train[feature_cols]
     df_train_y = df_train.is_duplicate
 
-    model = GradientBoosingClassifer(leaning_rate=0.1, max_features='sqrt', n_estimators=300)
+    model = GradientBoostingClassifer(learning_rate=0.1, max_features='sqrt', n_estimators=300)
     buil_model(model, df_train_X, df_train_y)
 
+    # Get all the engineered features of df_test.
     get_features(df_test)
+
     df_test_X = df_test[feature_cols]
     df_test_y = df_test.is_duplicate
     get_scores(model, df_test_X, df_test_y)
